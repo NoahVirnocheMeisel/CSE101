@@ -34,6 +34,10 @@ void printString(void *str) {
   printf("%s    ", s); // print string starting from s
 }
 
+void printStations(void *stat) {
+  Station *s = stat;
+  printf("%s\n", get_name(s));
+}
 int main(int argc, char **argv) {
   // creates a new station struct.
 
@@ -48,7 +52,7 @@ int main(int argc, char **argv) {
   int station_num;
   scanf("%d", &station_num);
 
-  ListPtr stations_list = createList(printString);
+  ListPtr stations_list = createList(printStations);
 
   for (int i = 0; i < station_num; i++) {
     scanf("%s %d", station_name, &num_dishes);
@@ -56,17 +60,19 @@ int main(int argc, char **argv) {
                add_station(strdup(station_name), num_dishes, initializeQueue(0, NULL)));
   }
 
-  ListPtr people_list = createList(printString);
+  ListPtr people_list = createList(printStations);
   scanf("%s", filename);
-  printf("%s\n",filename);
   FILE *people_file = fopen(filename, "r");
   char word[50];
   int numberOfPeople;
   fscanf(people_file,"%d",&numberOfPeople);
   for (int i = 0; i < numberOfPeople;i++) {
     fscanf(people_file,"%s %s",word,station_name);
-    appendList(people_list,add_station(strdup(word),num_dishes,NULL));
+    Station *s = access_station_by_name(stations_list,station_name,station_num);
+    Queue *q = get_line(s);
+    enqueue(q,strdup(word));
   }
+  fclose(people_file);
 
 
   while (true) {
@@ -100,16 +106,24 @@ int main(int argc, char **argv) {
       break;
     case 3:
       scanf("% s % s", person_name, station_name);
-      
-
       break;
     case 4:
       break;
     case 5:
       break;
     case 6:
+      for (int i = 0; i < station_num;i++){
+        printQueue(get_line(getList(stations_list,i)));
+      }
+      printList(people_list);
       break;
     case 7:
+      for (int i = 0; i < station_num; i++) {
+        Station* s = getList(stations_list,i);
+        close_station(&s);
+      }
+      destroyList(&stations_list);
+      destroyList(&people_list);
       return 0;
       break;
     }
@@ -134,7 +148,7 @@ int main(int argc, char **argv) {
 //return strcmp(name, s->name)
 Station *access_station_by_name(ListPtr station_list, char *station_name,int number_of_stations) {
   for (int i = 0; i < number_of_stations; i++) {
-    Station *current_station =getList(station_list,i);
+    Station *current_station = getList(station_list,i);
     if (strcmp(station_name, get_name(current_station)) == 0) {
       return current_station;
     }
@@ -151,6 +165,7 @@ Station *add_station(char *dish, int num_serv, Queue *line) {
 void close_station(Station **s) {
   if (s != NULL && *s != NULL) {
     destructQueue(&(*s)->line);
+    free((*s)->dish_name);
     free(*s);
     *s = NULL;
     s = NULL;

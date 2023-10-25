@@ -23,12 +23,11 @@ Queue-make sure to delete strings and the array
 void destructQueue(Queue **q) {
   if (q != NULL && *q != NULL) {
     for (int i = 0; i < (*q)->size; i++) {
-      free((*q)->array[i]);
+      free(((*q)->array)[i]);
     }
     free((*q)->array);
     free(*q);
     *q = NULL;
-    free(q);
     q = NULL;
   }
 }
@@ -40,15 +39,17 @@ queue
 */
 // I hate this
 void enqueue(Queue *q, char *name) {
-  q->size++;
-  char **new = calloc(q->size, sizeof(char *));
-  if (q->array != NULL) {
+  (q->size)++;
+  char **new = calloc(q->size, sizeof(char*));
+  if (q->size-1 > 0) {
     for (int i = 0; i < q->size - 1; i++) {
       new[i] = q->array[i];
     }
   }
-  new[q->size] = name;
+  new[(q->size)-1] = name;
+  if(q->array != NULL) {
   free(q->array);
+  }
   q->array = new;
 }
 
@@ -63,7 +64,7 @@ void dequeue(Queue *q) {
     printf("Empty Queue\n");
   } else {
     (q->size)--;
-    char **new = calloc(q->size, sizeof(char **));
+    char **new = calloc(q->size, sizeof(char*));
     for (int i = 0; i < q->size + 1; i++) {
       new[i] = q->array[i + 1];
     }
@@ -80,12 +81,15 @@ order (head to tail)
 */
 
 char *front(Queue *q) { return q->array[0]; }
+
+
 void printQueue(Queue *q) {
-  for (int i = 0; i < q->size - 1; i++) {
-    printf("%s  ", q->array[i]);
+  for (int i = 0; i < q->size; i++) {
+    printf("%s\n", (q->array)[i]);
   }
-  printf("%s\n", q->array[q->size]);
-}
+  printf("\n");
+  }
+
 
 //------------------------------------------------------------------------
 
