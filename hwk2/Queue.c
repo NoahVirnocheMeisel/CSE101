@@ -65,13 +65,17 @@ void dequeue(Queue *q) {
   } else {
     (q->size)--;
     char **new = calloc(q->size, sizeof(char*));
-    for (int i = 0; i < q->size + 1; i++) {
+    if (q->size > 0) {
+    for (int i = 0; i < q->size; i++) {
       new[i] = q->array[i + 1];
+    }
     }
     free(q->array);
     q->array = new;
   }
-}
+
+  }
+
 
 //------------------------------------------------------------------------
 

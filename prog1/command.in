@@ -1,0 +1,5 @@
+test.in
+format L 10
+format R 10
+format C 10
+exit
