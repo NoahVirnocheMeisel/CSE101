@@ -7,7 +7,7 @@
 typedef struct Queue {
   int size;
   char **array;
-}Queue;
+} Queue;
 // Constructor-Destructor ------------------------------------
 
 // Initialize Queue from and array of ints of length n, The length 'n'

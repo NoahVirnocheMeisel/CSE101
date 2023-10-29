@@ -1,7 +1,6 @@
 #include "stations.h"
 #include "Queue.c"
 
-
 Station *add_station(char *dish, int num_serv, Queue *line) {
   Station *S = calloc(1, sizeof(Station));
   s->dish_name = dish;

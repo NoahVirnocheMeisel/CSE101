@@ -40,15 +40,15 @@ queue
 // I hate this
 void enqueue(Queue *q, char *name) {
   (q->size)++;
-  char **new = calloc(q->size, sizeof(char*));
-  if (q->size-1 > 0) {
+  char **new = calloc(q->size, sizeof(char *));
+  if (q->size - 1 > 0) {
     for (int i = 0; i < q->size - 1; i++) {
       new[i] = q->array[i];
     }
   }
-  new[(q->size)-1] = name;
-  if(q->array != NULL) {
-  free(q->array);
+  new[(q->size) - 1] = name;
+  if (q->array != NULL) {
+    free(q->array);
   }
   q->array = new;
 }
@@ -64,18 +64,16 @@ void dequeue(Queue *q) {
     printf("Empty Queue\n");
   } else {
     (q->size)--;
-    char **new = calloc(q->size, sizeof(char*));
+    char **new = calloc(q->size, sizeof(char *));
     if (q->size > 0) {
-    for (int i = 0; i < q->size; i++) {
-      new[i] = q->array[i + 1];
-    }
+      for (int i = 0; i < q->size; i++) {
+        new[i] = q->array[i + 1];
+      }
     }
     free(q->array);
     q->array = new;
   }
-
-  }
-
+}
 
 //------------------------------------------------------------------------
 
@@ -86,14 +84,12 @@ order (head to tail)
 
 char *front(Queue *q) { return q->array[0]; }
 
-
 void printQueue(Queue *q) {
   for (int i = 0; i < q->size; i++) {
     printf("%s\n", (q->array)[i]);
   }
   printf("\n");
-  }
-
+}
 
 //------------------------------------------------------------------------
 
