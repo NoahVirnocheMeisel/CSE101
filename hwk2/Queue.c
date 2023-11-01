@@ -82,7 +82,13 @@ This function takes in a queue pointer and prints the contents of the queue in
 order (head to tail)
 */
 
-char *front(Queue *q) { return q->array[0]; }
+char *front(Queue *q) {
+  if (q != NULL) {
+    return (q->array[0]);
+  } else {
+    return NULL;
+  }
+}
 
 void printQueue(Queue *q) {
   for (int i = 0; i < q->size; i++) {

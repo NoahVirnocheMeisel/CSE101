@@ -9,19 +9,19 @@
 
 #------------------------------------------------------------------------------
 simulator:	simulator.o List.o Queue.o 
-	gcc -o  hwk2 simulator.o Queue.o List.o  -gdwarf-4
+	cc -o  hwk2 simulator.o Queue.o List.o  -gdwarf-4
 
 simulator.o: List.h Queue.h simulator.c 
-	gcc -c simulator.c -gdwarf-4
+	cc -c simulator.c -gdwarf-4
 
 Queue.o: Queue.h Queue.c
-	gcc -c Queue.c -gdwarf-4
+	cc -c Queue.c -gdwarf-4
 
 List.o: List.h List.c
-	gcc -c List.c -gdwarf-4
+	cc -c List.c -gdwarf-4
 
 %.o: %.c
-	gcc -c -o $@ $< -std=c99 -gdwarf-4
+	cc -c -o $@ $< -std=c99 -gdwarf-4
 
 clean:
 	rm -f simulator simulator.o Queue.o stations.o List.o hwk2
