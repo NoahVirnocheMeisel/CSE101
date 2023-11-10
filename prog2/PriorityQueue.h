@@ -1,24 +1,15 @@
-#ifndef __PRIORITYQUEUE_H_
-#define __PRIORITYQUEUE_H_
+#include "Heap.h"
 
-//----------------------------------------------------
-// PriorityQueue.h
-// Header file for Priority Queue ADT
-// Priority Queue implementation using a (min) heap
-// ---------------------------------------------------
+// DO NOT MAKE CHANGES TO THIS FILE
 
-// Priority Queue Functionalities ---------------------------------------
+// returns the oldest person in the PQ, without removing that person from the PQ.
+Person* getMax(Heap* heap);
 
-// return min element in priority queue
-int get_min(Heap* h);
+// returns the oldest person in the PQ, and removes them from the PQ. 
+Person* extractMax(Heap* heap);
 
-// remove and return the min elemenet in priority queue
-int extract_min(Heap* h);
+// inserts the person into the PQ
+void insert(Heap* heap, Person* person);
 
-// increase priority of element i to 'new_value'
-void increase_priority(Heap* h, int i, int new_value, int idn);
-
-// insert element with priority 'value' into the priority queue
-void insert(Heap* h, int id, int value);
-
-#endif // __PRIORITYQUEUE_H_
+// Updates the age of the person at index, index, in the PQ, to new_priority
+void increasePriority(Heap* heap, int index, int new_priority);

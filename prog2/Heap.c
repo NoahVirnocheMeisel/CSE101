@@ -3,92 +3,115 @@
 #include<stdio.h>
 #include<assert.h>
 #include"Heap.h"
-/* TODO: declare the Heap struct as in the header file
-This Heap struc has the following fields:
-- len: length of the array used for implementing the heap
-- size: number of elements in the backbone array that are 'heapified' or ordered as heap
-- array: (pointer to) array used for implementing the heap
-- id: (pointer to) array of client id used for implementing the heap
-*/
-struct Heap {
-    int len;
-    int size;
-    int *array;
-    int*id;
-}
 
-Heap* initializeHeap(int len, int h_size, int* arr, int* id) {
+/*typedef struct person{
+    int age;
+    char* name;
+    char* type;
+    char* destinations;
+} Person;
+
+typedef struct Heap {
+    Person* arr;
+    int size;
+    int capacity;
+} Heap;*/
+
+void swap(Person*a, Person*b);
+void swim(Heap *h, int i);
+Heap* initializeHeap(Person* arr, int capacity, int size) {
     Heap *h = calloc(1,sizeof(Heap));
-    h->len = len;
-    h-size = h_size;
-    h->array = arr;
-    h->id = id;
+    h->arr = calloc(capacity,sizeof(Person));
+    //make our heap 1 indexed to help with our heap stuff so the numbers are nice and aren' ugly and bad
+    if (arr != NULL) {
+    for (int i = 0; (i < size) && i <= capacity; i++) {
+        h->arr[i+1] = arr[i];
+    }
+    }
+    h->size = size;
+    h->capacity = capacity;
+    heapify(h,0);
     return h;
 }
 
 // free memory allocated to Heap pointer h
 void destructHeap(Heap** h) {
-    return NULL;
-}
+    void freePersonHEAPMODE(Person *p);
+    if (h != NULL && (*h) != NULL) {
+        for (int i = 1; i < (*h)->size; i++) {
+           freePersonHEAPMODE(&(*h)->arr[i]);
+        }
+        free(*h);
+        *h = NULL;
 
+    }
+}
+void freePersonHEAPMODE(Person *p) {;
+    free((p->type));
+    free((p->destinations));
+    free(p);
+    p = NULL;
+}
+//add element to a heap, call swim on the element you are adding
+
+
+//to remove head of heap, swap head of the heap with last element
+//then remove the tail
+//call sink on the head
 
 // Heap Functionalities ------------------------------
 
 // Maintain Heap property given an index i for heap pointed to by h
 void heapify(Heap* h, int i) {
-    int left = left(i);
-    int right = right(i);
-    int smallest = 0;
-    if (left <= h->size && h->array[left] < h->array[i]) {
-        smallest = left;
-    } else {
-        smallest = i;
-    }
-    if (right <= h->size && h->array[right] < h->array[largest]) {
-        smallest = right;
-    }
-    if (smallest != i) {
-        swap(h->array,i,smallest);
-        heapify(h,smallest);
-    }
+    for (int b = size(h);b > 0; b--) {
+        swim(h,b);
+    }  
 }
-void Heapsort(int *A, int length) {
-    array_to_heap(A,A,length,size);
-}
-
-
-// Build heap from array of ints A
-Heap* array_to_Heap(int* A, int* id, int len, int size) {
-    Heap *h = initializeHeap(A,id,len,size);
-    for (int i = h->size/2; i > 0;i--) {
-        heapify(h,i);
-    }
-    return h;
-}
-
-// Return int corresponding to size of Heap* h
-
+//rip NRG and NA's chances at worlds
+// void Heapsort(int *A, int length) {
+//     array_to_heap(A,A,length,size);
+// }
 int size(Heap* h) {
     return h->size;
 }
-
 int len(Heap* h) {
-    return h->len;
+    return h->capacity;
+}
+int parent(int i){
+    return i/2;
 }
 
-
-// Helper functions for fetching parent, left or right child
-int parent(int i) {return i/2;}
 int left(int i) {return 2*i;}
-int right(int i) {return 2*i + 1;}
-// Helper for replacing A[i] and A[j] elements in an array
-void swap(int* A, int i, int j) {
-    int temp;
-    temp = A[i];
-    A[i] = A[j];
-    A[j] = temp;    
+
+int right(int i) {return (2*i)+1;}
+
+//sink or swim, this heap will be made :)
+void swim(Heap *h, int i) {
+     while (i > 1) {
+        int parent = i/2;
+        if ((h->arr[i]).age > (h->arr[parent]).age) {
+            swap(&(h->arr[i]),&(h->arr[parent]));
+            i = parent;
+        } else{
+            break;
+        }
+    }
 }
-void printHeap(Heap* h);
+
+// Helper functions for fetching parent, left or right child. Root Node is at index 1
 
 
+
+void printHeap(Heap* h) {
+    for(int i = 1; i < h->size;i++) {
+        printf("%s(%s) ",((h->arr)[i]).name,((h->arr)[i]).type);
+    }
+}
+
+
+void swap(Person*a, Person*b) {
+    Person temp = *a;
+    *a = *b;
+    *b = temp;
+}
 //----------------------------------------------------------------------

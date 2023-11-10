@@ -1,48 +1,62 @@
 #ifndef __HEAP_H_
 #define __HEAP_H_
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+// DO NOT MAKE CHANGES TO THIS FILE
 
 //----------------------------------------------------
 // Heap.h
 // Header file for Heap
-// Heap implementation using an array of integers
+// Heap implementation using an array of type persons (defined below)
 // ---------------------------------------------------
 
-typedef struct Heap Heap;
+typedef struct person{
+    int age;
+    char* name;
+    char* type;
+    char* destinations;
+} Person;
 
-// Constructor-Destructors --------------------------
-
-// initialize Heap of size 'h_size' from aray of length 'len'
-Heap* initializeHeap(int len, int h_size, int* arr, int* id);
-
-// free memory allocated to Heap pointer h
-void destructHeap(Heap* h);
+typedef struct Heap {
+    Person* arr;
+    int size;
+    int capacity;
+} Heap;
 
 
-// Heap Functionalities ------------------------------
+//------------------------- Constructor-Destructor ------------------------------
 
-// Maintain Heap property given an index i for heap pointed to by h
+// Constructor to initialize heap from an array of Persons, arr, of capacity, capacity, and size, size. 
+Heap* initializeHeap(Person* arr, int capacity, int size);
+
+// Destructor to free memory of the heap, and then free the memory occupied by the heap pointer. 
+void destructHeap(Heap** h);
+
+
+// ------------------------ Heap Property maintainers ----------------------------
+// Used to maintain the heap structure top-down
 void heapify(Heap* h, int i);
 
-// Build heap from array of ints A
-Heap* array_to_Heap(int* A, int* id, int len, int size);
-
-// Return int corresponding to size of Heap* h
-
-int size(Heap* h);
-
-int len(Heap* h);
-
-
-// Helper functions for fetching parent, left or right child
+// -------------------------------- Helper Functions -----------------------------------
+// return the array index of the parent node
 int parent(int i);
 
+// return the array index of the left child
 int left(int i);
 
+// return the array index of the right child
 int right(int i);
 
-// Helper for replacing A[i] and A[j] elements in an array
-void swap(int* A, int i, int j);
-
+// Prints the Names and ages of the people in the heap.
 void printHeap(Heap* h);
+
+// Return the length of the array in the heap
+int len(Heap* h);
+
+// return the capacity of the heap
+int size(Heap* h);
 
 #endif // __HEAP_H_
