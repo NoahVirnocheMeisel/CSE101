@@ -6,8 +6,10 @@
 void swap(void *a, void*b);
 // returns the oldest person in the PQ, without removing that person from the PQ.
 Person* getMax(Heap* heap) {
-    if (size(heap)>= 1) {
-    return &(heap->arr[1]);
+    if (size(heap) > 1) {
+        Person *return_val = calloc(1,sizeof(Person));
+        return_val = &heap->arr[1];
+        return return_val;
     }
     return NULL;
 }
@@ -21,21 +23,26 @@ Person* extractMax(Heap* heap) {
     Person temp = heap->arr[1];
     heap->arr[1] = heap->arr[heap->size];
     heap->arr[heap->size] = temp; 
-    //printf("After Swap %s\n",return_val->name);
-    heap->size--;
-    printf("SIZE: %d\n",size(heap));
+    //printf("%d",heap->size);
+    (heap->size)--;
     heapify(heap,1);
+    //printHeap(heap);
+    //printf("\n%d %d\n",heap->size, heap->capacity);
     return return_val;
 }
 //[0,1,2,3,4,5, ,]
 // inserts the person into the PQ
 void insert(Heap* heap, Person* person) {
-    void freePersonPQMODE(Person *p);
     heap->size++;
-    if (heap->capacity > heap->size) {
-    heap->arr[heap->size] = *p;
+    if (heap->capacity <= heap->size+1 && heap->arr != NULL) {
+    heap->capacity = (heap->capacity) * 2;
+    Person *p = calloc(heap->capacity,sizeof(Person));
+    for (int i = 1; (i < heap->size) && i < heap->capacity; i++) {
+        p[i]= heap->arr[i];
     }
-    
+    heap->arr = p;
+    }
+    (heap->arr)[heap->size-1] = *(person);
 }
 
 // Updates the age of the person at index, index, in the PQ, to new_priority

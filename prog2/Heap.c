@@ -20,16 +20,17 @@ typedef struct Heap {
 void swap(Person*a, Person*b);
 void swim(Heap *h, int i);
 Heap* initializeHeap(Person* arr, int capacity, int size) {
+    //size on initalization is the number of elements in the array.
     Heap *h = calloc(1,sizeof(Heap));
-    h->arr = calloc(capacity,sizeof(Person));
+    h->arr = calloc(capacity+1,sizeof(Person));
     //make our heap 1 indexed to help with our heap stuff so the numbers are nice and aren' ugly and bad
     if (arr != NULL) {
-    for (int i = 0; (i < size) && i <= capacity; i++) {
+    for (int i = 0; (i < size) && i < capacity; i++) {
         h->arr[i+1] = arr[i];
     }
     }
-    h->size = size;
-    h->capacity = capacity;
+    h->size = size+1;
+    h->capacity = capacity+1;
     heapify(h,0);
     return h;
 }
@@ -105,6 +106,8 @@ void swim(Heap *h, int i) {
 void printHeap(Heap* h) {
     for(int i = 1; i < h->size;i++) {
         printf("%s(%s) ",((h->arr)[i]).name,((h->arr)[i]).type);
+    }
+    if (h->size == 1) {
     }
 }
 

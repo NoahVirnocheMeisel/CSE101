@@ -54,7 +54,7 @@ enum potential_stops{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z};
 int main(void) {
 
 void freePerson(Person *p);
-void DeloadBusSection(int*seats,int current_stop_index,int *number_of_people_still_here,Heap*passengers,Heap* current_stop);
+void DeloadBusSection(int*seats,int current_stop_index,int *number_of_people_still_here,Heap*passengers,Heap* current_stop, Bus *b);
 Person make_person_from_string(char *string_info);
 //read in the busconfig.in from stdin
 char filename[50];
@@ -87,11 +87,14 @@ int economy_seats;
 char current_stop_index;
 char *stops;
 Bus*ListOfBus[numberBuses];
-
+char *FileStores[numberBuses];
+FILE* BusOutFiles[numberBuses];
 //loops through each line of bus file and splits the bus information into strings for each field.
 for (int i = 0; i < numberBuses;i++) {
     fscanf(busconfig,"%s",bussin);
     name = strdup(strtok(bussin,"|"));
+    FileStores[i] = strcat(name,".out");
+    BusOutFiles[i] = fopen(FileStores[i],"w");
     business_seats = atoi(strtok(0,","));
     economy_seats = atoi(strtok(0,"|"));
     char *temp  = strtok(0,"|");
@@ -162,19 +165,24 @@ int run = 0;
 //PROGRAM LOOP
 while(number_of_people_still_here > 0) {
 for (int i = 0; i < numberBuses;i++) {
+  printf("BUS NUMBER: %d\n",i);
   Heap *temp_passenger_heap = initializeHeap(NULL,1,0);
   Bus *CurrentBus = ListOfBus[i];
   //Prints the state of the bus
   if (run){
   //TODO: output files
-  printf("%d|",run);
+  fprintf(BusOutFiles[i],"%d|",run);
   if (CurrentBus->num_passengers > 0) {
-    printHeap(CurrentBus->business_passengers);
-    printHeap(CurrentBus->economey_passengers);
+    for(int i = 1; i < size(CurrentBus->business_passengers);i++) {
+        fprintf(BusOutFiles[i-1],"%s(%s) ",((CurrentBus->business_passengers->arr)[i]).name,((CurrentBus->business_passengers->arr)[i]).type);
+    }
+    for(int i = 1; i < size(CurrentBus->economey_passengers);i++) {
+        fprintf(BusOutFiles[i-1],"%s(%s) ",((CurrentBus->economey_passengers->arr)[i]).name,((CurrentBus->economey_passengers->arr)[i]).type);
+    }
   }else {
-      printf("Empty\n");
+      fprintf(BusOutFiles[i],"Empty");
   }
-  printf("\n");
+  fprintf(BusOutFiles[i],"\n");
   }//Print Conditional For start of each Bus State
 
   //deloads and then Picks up from current stop and goes to the next stop. We are starting at 0
@@ -185,25 +193,24 @@ for (int i = 0; i < numberBuses;i++) {
   //deload people
   int new_bus_passengers = 0;
 
-  DeloadBusSection(&(CurrentBus->business_seats),CurrentBus->current_stop_index,&number_of_people_still_here,CurrentBus->business_passengers,current_stop->business_heap);
-  DeloadBusSection(&(CurrentBus->economy_seats),CurrentBus->current_stop_index,&number_of_people_still_here,CurrentBus->economey_passengers,current_stop->economey_heap);
-
+  DeloadBusSection(&(CurrentBus->business_seats),CurrentBus->current_stop_index,&number_of_people_still_here,CurrentBus->business_passengers,current_stop->business_heap,CurrentBus);
+  DeloadBusSection(&(CurrentBus->economy_seats),CurrentBus->current_stop_index,&number_of_people_still_here,CurrentBus->economey_passengers,current_stop->economey_heap,CurrentBus);
   //LOADING BUSINESS PASSENGERS
   while(getMax(current_stop->business_heap) != NULL && CurrentBus->business_seats > 0) {
-    p = *extractMax(current_stop->business_heap);
+    Person* p = extractMax(current_stop->business_heap);
     int tracker = 1;
     for (int stops_index = 0; i < strlen(CurrentBus->stops);stops_index++ ) {
-    if ((p.destinations)[(p.destinations)[0]] == (CurrentBus->stops)[stops_index]) {
-      insert(CurrentBus->business_passengers,&p);
+    if ((p->destinations)[(p->destinations)[0]] == (CurrentBus->stops)[stops_index]) {
+      insert(CurrentBus->business_passengers,p);
       CurrentBus->num_passengers++;
       CurrentBus->business_seats--;
-      p.destinations[0]++;
+      p->destinations[0]++;
       tracker = 0;
       break;
      }
    }
    if (tracker) {
-    insert(temp_passenger_heap,&p);
+    insert(temp_passenger_heap,p);
    }
    }
    for (int i = 1; i < size(temp_passenger_heap);i++){
@@ -213,18 +220,15 @@ for (int i = 0; i < numberBuses;i++) {
   
   //LOAD ECONOMEY PASSENGERS
    while(getMax(current_stop->economey_heap) != NULL && CurrentBus->economy_seats > 0) {
+    //printf("%d\n",CurrentBus->economy_seats);
     //printf("Max Before Extract: %s\n",getMax(current_stop->economey_heap)->name);
+    //printf("MAX: %s\n",getMax(current_stop->economey_heap)->name);
     Person *p = extractMax(current_stop->economey_heap);
-    //printf("Person Extracted: %s\n",p.name);
-    //printf("TOP AFTER EXTRACTION: %s\n",getMax(current_stop->economey_heap)->name);
     int tracker = 1;
-    //printf("Person checking it out:%s\n",p.name);
     for (int stops_index = 0; i < strlen(CurrentBus->stops);stops_index++ ) {
     if ((p->destinations)[(p->destinations)[0]] == (CurrentBus->stops)[stops_index]) {
       //CurrentBus->passengers[CurrentBus->num_passengers] = p;
       insert(CurrentBus->economey_passengers,p);
-      printHeap(CurrentBus->economey_passengers);
-      printf("\n");
       CurrentBus->num_passengers++;
       (CurrentBus->economy_seats)--;
       p->destinations[0]++;
@@ -240,15 +244,23 @@ for (int i = 0; i < numberBuses;i++) {
     insert(current_stop->economey_heap,&(temp_passenger_heap->arr[i]));
     extractMax(temp_passenger_heap);
    }
-   printHeap(CurrentBus->business_passengers);
-   printHeap(CurrentBus->economey_passengers);
-   printf("\n");
+   //printHeap(CurrentBus->business_passengers);
+   //printHeap(CurrentBus->economey_passengers);
+   //printf("\n");
    destructHeap(&temp_passenger_heap);
-   CurrentBus->current_stop_index = (CurrentBus->current_stop_index++) % strlen(CurrentBus->stops);
+   CurrentBus->current_stop_index = (CurrentBus->current_stop_index + 1) % strlen(CurrentBus->stops);
   }//BUS LOOP
   current_stop_index++;
   run++;
 }//Total LOOP
+
+
+for(int i = 0; i < numberBuses;i++) {
+  destructHeap(&ListOfBus[i]->economey_passengers);
+  destructHeap(&ListOfBus[i]->business_passengers);
+  free(ListOfBus[i]->name);
+  free(ListOfBus[i]->stops);
+}
 
 //Now we do stuff for our stops
 
@@ -264,20 +276,23 @@ for (int i = 0; i < numberBuses;i++) {
 //END OF MAIN
 
 }
-void DeloadBusSection(int*seats,int current_stop_index,int *number_of_people_still_here,Heap*passengers,Heap* current_stop) {
+void DeloadBusSection(int*seats,int current_stop_index,int *number_of_people_still_here,Heap*passengers,Heap* current_stop, Bus * b) {
 Person p;
 int add_amount = 0;
-for (int i = 0; i < size(passengers);i++) {
+//printf("SIZE:%d\n",size(passengers));
+for (int i = 1; i < size(passengers);i++) {
     //p = CurrentBus->passengers[i];
-    p = *getMax(passengers);
+    p = *(getMax(passengers));
+    //printf("PERSON WE SENDING: %s\n",p.name);
     if(p.destinations[0]-1 == current_stop_index) {
       //get off the bus
       (*seats)++;
-      freePerson(extractMax(passengers));
+      b->num_passengers--;
       if (p.destinations[0]-1 == strlen(p.destinations)-1) {
         (*number_of_people_still_here)--;
+        free(extractMax(passengers));
       } else {
-        insert(current_stop,&p);
+        insert(current_stop,extractMax(passengers));
       }
       }
   }
