@@ -39,8 +39,8 @@ Heap* initializeHeap(Person* arr, int capacity, int size) {
 void destructHeap(Heap** h) {
     void freePersonHEAPMODE(Person *p);
     if (h != NULL && (*h) != NULL) {
-        for (int i = 1; i < (*h)->size; i++) {
-           freePersonHEAPMODE(&(*h)->arr[i]);
+        if ((*h)->arr != NULL) {
+           free((*h)->arr);
         }
         free(*h);
         *h = NULL;
